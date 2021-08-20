@@ -60,7 +60,7 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
             self._logger.debug("{}: {}".format(k, v))
 
     async def meross_shutdown(self): 
-        manager.close()
+        self.manager.close()
         await http_api_client.async_logout()
 
     async def meross_init(self):
@@ -71,24 +71,23 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
             return
 
         # Setup and start the device manager
-        manager = MerossManager(http_client=http_api_client)
-        await manager.async_init()
+        self.manager = MerossManager(http_client=http_api_client)
+        await self.manager.async_init()
 
         # Retrieve all the MSS310 devices that are registered on this account
-        plugs =  await manager.async_device_discovery()
-        #    plugs = manager.find_devices(device_type="mss425f")
+        self.plugs =  await self.manager.async_device_discovery()
 
-        if len(plugs) < 1:
+        if len(self.plugs) < 1:
             self._logger.info("No MSS425F plugs found...")
         else:
-            self._logger.info("Found {} devices".format(len(plugs)))
-            for i in range(len(plugs)):
-                await plugs[i].async_update()
-                self._logger.info("Device {} name is {}".format(i,plugs[i].name))
-                if(len(plugs[i].channels)>1):
-                    self._logger.info("{} has {} channels".format(plugs[i].name, len(plugs[i].channels)))
-                    for j in range(len(plugs[i].channels)):
-                        self._logger.info("........{} is {}".format(plugs[i].channels[j].name,plugs[i].is_on(j)))
+            self._logger.info("Found {} devices".format(len(self.plugs)))
+            for i in range(len(self.plugs)):
+                await self.plugs[i].async_update()
+                self._logger.info("Device {} name is {}".format(i,self.plugs[i].name))
+                if(len(self.plugs[i].channels)>1):
+                    self._logger.info("{} has {} channels".format(self.plugs[i].name, len(self.plugs[i].channels)))
+                    for j in range(len(self.plugs[i].channels)):
+                        self._logger.info("........{} is {}".format(self.plugs[i].channels[j].name,self.plugs[i].is_on(j)))
 
 
     def on_startup(self, host, port):
@@ -103,22 +102,11 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
         asyncio.run(self.meross_shutdowm())
         
 
-    #def get_sysinfo(self):
-    #    cmd = dict(system=dict(get_sysinfo=dict()))
-    #    result = self.send(cmd)
-
-    #        try:           
-    #        return result['system']['get_sysinfo']
-    #    except (TypeError, KeyError):
-    #        self._logger.info("Expecting get_sysinfo, got result={}".format(result))
-    #        return dict()
-
-
     async def change_psu_state(self, state):
         if state == 1:
-            await plugs[0].async_turn_on(channel=4)
+            await self.plugs[0].async_turn_on(channel=self.config['plug'])
         else:
-            await plugs[0].async_turn_on(channel=4)
+            await self.plugs[0].async_turn_on(channel=self.config['plug'])
         self._logger.info("Changing PSU state")
 
     def turn_psu_on(self):
@@ -140,72 +128,8 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
 
     def get_psu_state(self):
         self._logger.debug("get_psu_state")
-        # sysinfo = self.get_sysinfo()
-
-        # if not sysinfo:
-        #     return False
-
-        # result = False
-
-        # if self.config['plug'] > 0:
-        #     try:
-        #         result = bool(sysinfo['children'][self.config['plug']-1]['state'])
-        #     except KeyError:
-        #         self._logger.error("Expecting state for child index {}, got sysinfo={}".format(self.config['plug']-1, sysinfo))
-        # else:
-        #     try:
-        #         result = bool(sysinfo['relay_state'])
-        #     except KeyError:
-        #         self._logger.error("Expecting relay_state, got sysinfo={}".format(sysinfo))
-        result = False    
+        result = self.plugs[0].is_on(self.config['plug'])    
         return result
-
-
-    # def send(self, cmd):
-    #     self._logger.debug("send={}".format(cmd))
-    #     cmd_json = json.dumps(cmd)
-
-    #     result = dict()
-
-    #     try:
-    #         host = socket.gethostbyname(self.config['address'])
-    #     except Exception:
-    #         self._logger.error("Unable to resolve hostname {}".format(self.config['address']))
-    #         return result
-
-    #     port = 9999
-
-    #     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #     try:
-    #         s.connect((host, port))
-    #     except (OSError, ConnectionRefusedError) as e:
-    #         self._logger.error("Unable to connect to {}:{} - {}".format(host, port, e.strerror))
-    #         return result
-
-    #     try:
-    #         s.send(self.encrypt(cmd_json))
-    #     except socket.error as e:
-    #         self._logger.error("Error sending data - {}".format(e.strerror))
-    #         return result
-
-    #     try:
-    #         data = s.recv(1024)
-    #         len_data = unpack('>I', data[0:4])
-    #         while (len(data) - 4) < len_data[0]:
-    #             data = data + s.recv(1024)
-    #     except socket.timeout as e:
-    #         self._logger.error("Error receiving data - {}".format(e))
-    #         return result
-    #     except struct.error:
-    #         self._logger.error("Error invalid data received")
-    #         return result
-
-    #     s.close()
-
-    #     result = json.loads(self.decrypt(data[4:]))
-    #     self._logger.debug("recv={}".format(result))
-
-    #     return result
 
     def on_settings_save(self, data):
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
@@ -244,7 +168,7 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "PSU Control - Meross"
-__plugin_pythoncompat__ = ">=2.7,<4"
+__plugin_pythoncompat__ = ">=3.7,<4"
 
 def __plugin_load__():
     global __plugin_implementation__

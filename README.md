@@ -18,4 +18,4 @@ Once done, restart OctoPrint and go to PSU Control configuration. I would sugges
 
 ## Thanks 
 
-Many thanks to [Thimotée Girard] https://github.com/timgir for his excellent Meross plug-in.
+Many thanks to [Thimotée Girard](https://github.com/timgir) for his excellent Meross plug-in.

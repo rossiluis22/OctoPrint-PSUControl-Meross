@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_octoprint_psucontrol_meross/templates *
+recursive-include octoprint_octoprint_psucontrol_meross/translations *
+recursive-include octoprint_octoprint_psucontrol_meross/static *

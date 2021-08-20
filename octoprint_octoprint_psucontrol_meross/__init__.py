@@ -77,17 +77,17 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
         # Retrieve all the MSS310 devices that are registered on this account
         self.plugs =  await self.manager.async_device_discovery()
 
-        if len(self.plugs) < 1:
-            self._logger.info("No MSS425F plugs found...")
-        else:
-            self._logger.info("Found {} devices".format(len(self.plugs)))
-            for i in range(len(self.plugs)):
-                await self.plugs[i].async_update()
-                self._logger.info("Device {} name is {}".format(i,self.plugs[i].name))
-                if(len(self.plugs[i].channels)>1):
-                    self._logger.info("{} has {} channels".format(self.plugs[i].name, len(self.plugs[i].channels)))
-                    for j in range(len(self.plugs[i].channels)):
-                        self._logger.info("........{} is {}".format(self.plugs[i].channels[j].name,self.plugs[i].is_on(j)))
+        # if len(self.plugs) < 1:
+        #     self._logger.info("No MSS425F plugs found...")
+        # else:
+        #     self._logger.info("Found {} devices".format(len(self.plugs)))
+        #     for i in range(len(self.plugs)):
+        #         await self.plugs[i].async_update()
+        #         self._logger.info("Device {} name is {}".format(i,self.plugs[i].name))
+        #         if(len(self.plugs[i].channels)>1):
+        #             self._logger.info("{} has {} channels".format(self.plugs[i].name, len(self.plugs[i].channels)))
+        #             for j in range(len(self.plugs[i].channels)):
+        #                 self._logger.info("........{} is {}".format(self.plugs[i].channels[j].name,self.plugs[i].is_on(j)))
 
 
     def on_startup(self, host, port):

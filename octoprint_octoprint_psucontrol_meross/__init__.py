@@ -106,7 +106,7 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
         if state == 1:
             await self.plugs[0].async_turn_on(channel=self.config['plug'])
         else:
-            await self.plugs[0].async_turn_on(channel=self.config['plug'])
+            await self.plugs[0].async_turn_off(channel=self.config['plug'])
         self._logger.info("Changing PSU state")
 
     def turn_psu_on(self):

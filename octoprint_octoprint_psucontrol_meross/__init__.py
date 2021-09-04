@@ -167,7 +167,7 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
             )
         )
 
-__plugin_name__ = "PSU Control - Meross"
+__plugin_name__ = "PSU Control-Meross"
 __plugin_pythoncompat__ = ">=3.7,<4"
 
 def __plugin_load__():

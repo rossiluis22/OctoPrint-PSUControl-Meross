@@ -21,7 +21,7 @@ from struct import unpack
 from builtins import bytes
 import struct
 
-nest_asyncio.apply()
+#nest_asyncio.apply()
 
 class PSUControl_Meross(octoprint.plugin.StartupPlugin,
                         octoprint.plugin.RestartNeedingPlugin,
@@ -96,6 +96,7 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
             self._logger.warning("The version of PSUControl that is installed does not support plugin registration.")
             return
         psucontrol_helpers['register_plugin'](self)
+        nest_asyncio.apply()
         asyncio.run(self.meross_init())
 
     def on_shutdown():

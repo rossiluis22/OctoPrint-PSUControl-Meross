@@ -27,17 +27,24 @@ class PSUControl_Meross(octoprint.plugin.StartupPlugin,
                         octoprint.plugin.RestartNeedingPlugin,
                         octoprint.plugin.TemplatePlugin,
                         octoprint.plugin.SettingsPlugin,
-                        octoprint.plugin.ShutdownPlugin):
+                        octoprint.plugin.ShutdownPlugin,
+                        octoprint.plugin.WizardPlugin):
 
     def __init__(self):
         self.config = dict()
 
+    def is_wizard_required(self):
+        return self._settings.get(["needWizard"]) is True
+
+    def get_wizard_version(self):
+        return 1
 
     def get_settings_defaults(self):
         return dict(
             username = '',
             password = '',
-            plug = 0
+            plug = 0,
+            needWizard=True
         )
 
 
